@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Castle.DynamicProxy;
 
-namespace Dotnet.AOP.Tests;
+namespace Dotnet.AOP;
 
 public class CacheInterceptor : IInterceptor
 {
