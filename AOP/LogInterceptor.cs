@@ -7,9 +7,10 @@ public class LogInterceptor : IAsyncInterceptor
     private readonly IEnumerable<InterceptionAccetor> acceptors;
     private readonly ILoggerFactory loggerFactory;
 
-    public LogInterceptor(ILoggerFactory loggerFactory)
+    public LogInterceptor(ILoggerFactory loggerFactory, IEnumerable<InterceptionAccetor> acceptors)
     {
         this.loggerFactory = loggerFactory;
+        this.acceptors = acceptors;
     }
 
     public void InterceptSynchronous(IInvocation invocation)
