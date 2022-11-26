@@ -4,6 +4,7 @@ namespace Lithium.AOP;
 
 public class LogInterceptor : IAsyncInterceptor
 {
+    private readonly IEnumerable<InterceptionAccetor> acceptors;
     private readonly ILoggerFactory loggerFactory;
 
     public LogInterceptor(ILoggerFactory loggerFactory)
@@ -13,11 +14,27 @@ public class LogInterceptor : IAsyncInterceptor
 
     public void InterceptSynchronous(IInvocation invocation)
     {
-        // Step 1. Do something prior to invocation.
-
-        invocation.Proceed();
-
-        // Step 2. Do something after invocation.
+        var intercept = acceptors.Any(_ => _.Accept(invocation));
+        if (intercept)
+        {
+            var logger = loggerFactory.CreateLogger(invocation.TargetType);
+            try
+            {
+                // Step 1. Do something prior to invocation.
+                logger.LogDebug($"Calling {invocation.Method.Name}");
+                invocation.Proceed();
+                // Step 2. Do something after invocation.
+                logger.LogDebug($"Call to {invocation.Method.Name} completed");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, $"Call to {invocation.Method.Name} failed");
+            }
+        }
+        else
+        {
+            invocation.Proceed();
+        }
     }
 
     public void InterceptAsynchronous(IInvocation invocation)
